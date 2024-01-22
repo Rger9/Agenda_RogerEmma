@@ -8,6 +8,7 @@ namespace Agenda
         {
             char opcio;
 
+            Console.WriteLine("hola Roger");
             Console.WriteLine(EscriureNom("AGIONEjdfioasf"));
         }
 
