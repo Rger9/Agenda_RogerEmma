@@ -9,13 +9,9 @@ namespace Agenda
 
         static void Main(string[] args)
         {
-            char opcio;
-            string telefon;
-
-            Console.WriteLine(ValidarCorreu("roger.pallkad@gmail.com"));
-            Console.WriteLine(ValidarTelefon("133756238"));
-            Console.WriteLine(ValidarDni("41678255B"));
-            telefon = DemanarCorreu();
+            Console.WriteLine(Agenda());
+            TornarMenu();
+            DonarAlta();
         }
 
         // Mètode Agenda
@@ -29,20 +25,64 @@ namespace Agenda
                 "4 - Eliminar Usuari\n" +
                 "5 - Mostrar Agenda\n" +
                 "6 - Ordenar Agenda\n" +
-                "q - Sortir";
+                "q - Sortir\n";
             return agenda;
         }
-        
-        // Mètode LLegirFitxer
-        static void LlegirFitxer()
+
+        // Mètode ValidarOpcio
+        static bool ValidarOpcio(char opcio)
         {
-            StreamReader sR;
-            sR = new StreamReader(@".\agenda.txt");
+            bool valid = false;
+            if (opcio > '0' && opcio < '7' || opcio == 'q' || opcio == 'Q')
+            {
+                valid = true;
+            }
+            return valid;
         }
-        static void EscriureFitxer()
+
+        // Mètode SeleccionarOpcio
+        static void SeleccionarOpcio(char opcio)
         {
-            StreamWriter sW;
-            sW = new StreamWriter(@".\agenda.txt");
+            Console.Clear();
+            switch (opcio)
+            {
+                case '1':
+                    DonarAlta();
+                    break;
+                case '2':
+                    // Recuperar Usuari
+
+                    break;
+                case '3':
+                    // Modificar Usuari
+
+                    break;
+                case '4':
+                    // Eliminar Usuari
+
+                    break;
+                case '5':
+                    //Mostrar Agenda
+
+                    break;
+                case '6':
+                    // Ordenar Agenda
+
+                    break;
+                case 'q':
+                    // Sortir
+
+                    break;
+
+            }
+        }
+
+        // Mètode TornarMenu
+        static void TornarMenu()
+        {
+            Console.WriteLine($"\n\n-----------------------------------------");
+            Console.WriteLine($"Prem qualsevol botó per tornar a l'agenda ...");
+            char tornar = Console.ReadKey().KeyChar;
         }
 
         // Mètode DonarAlta
@@ -50,7 +90,7 @@ namespace Agenda
         {
             //Roger;Palmada;41673250B;633556238;17/04/2001;roger.palmada@gmail.com
             StreamWriter sW;
-            sW = new StreamWriter(@".\agenda.txt");
+            sW = new StreamWriter(new FileStream(@".\agenda.txt", FileMode.Append));
 
             string nom, cognom, dni, telefon, dNaixa, correu, dades;
             // Demana nom i cognom
@@ -58,7 +98,7 @@ namespace Agenda
             nom = EscriureNom(Console.ReadLine());
             nom = EscriureNom(nom);
 
-            Console.WriteLine("\nIntrodueix el teu cognom: ");
+            Console.Write("Introdueix el teu cognom: ");
             cognom = EscriureNom(Console.ReadLine());
             cognom = EscriureNom(cognom);
 
@@ -69,18 +109,11 @@ namespace Agenda
             telefon = DemanarTelefon();
 
             // Demana la data de naixament
-            Console.Write("\nIntrodueix la teva data de naixament: ");
-            dNaixa = Console.ReadLine();
+            dNaixa = DemanarData();
 
             // Demana el correu electronic
             correu = DemanarCorreu();
-            Console.Write("\nIntrodueix el teu correu electrònic: ");
-            correu = Console.ReadLine();
             
-            // Validar Dades
-
-
-
             // Escriure les Dades
             dades = nom + ';' + cognom + ';' + dni + ';' + telefon + ';' + dNaixa + ';' + correu;
             sW.WriteLine(dades);
@@ -92,15 +125,14 @@ namespace Agenda
         {
             string dni;
 
-            Console.WriteLine("Introdueix el teu número de DNI: (format: '41673251B')");
+            Console.Write("Introdueix el teu número de DNI (format: '41673251B'): ");
             dni = Console.ReadLine();
 
             while (!ValidarDni(dni))
             {
-                Console.WriteLine("ERROR DE LECTURA: Torna a introduir el teu número de DNI: (format: '41673251B')");
+                Console.Write("ERROR DE LECTURA: Torna a introduir el teu número de DNI (format: '41673251B'); ");
                 dni = Console.ReadLine();
             }
-            Console.Clear();
             return dni;
         }
 
@@ -128,15 +160,14 @@ namespace Agenda
         {
             string telefon;
 
-            Console.WriteLine("Introdueix el teu número de telèfon: (format: '972265402')");
+            Console.Write("Introdueix el teu número de telèfon (format: '972265402'): ");
             telefon = Console.ReadLine();
 
             while (!ValidarTelefon(telefon))
             {
-                Console.WriteLine("ERROR DE LECTURA: Torna a introduir el teu número de telèfon: (format: '972265402')");
+                Console.Write("ERROR DE LECTURA: Torna a introduir el teu número de telèfon (format: '972265402'): ");
                 telefon = Console.ReadLine();
             }
-            Console.Clear();
             return telefon;
         }
             
@@ -169,15 +200,14 @@ namespace Agenda
         {
             string correu;
 
-            Console.WriteLine("Introdueix el teu correu electrònic: ");
+            Console.Write("Introdueix el teu correu electrònic: ");
             correu = Console.ReadLine();
 
             while (!ValidarCorreu(correu))
             {
-                Console.WriteLine("ERROR DE LECTURA: Torna a introduir el teu correu electrònic: ");
+                Console.Write("ERROR DE LECTURA: Torna a introduir el teu correu electrònic: ");
                 correu = Console.ReadLine();
             }
-            Console.Clear();
             return correu;
 
         }
@@ -191,49 +221,34 @@ namespace Agenda
             return valid;
         }
 
+        // Demanar Data
+        static string DemanarData()
+        {
+            string data;
+
+            Console.Write("Introdueix la teva data de naixament (format: 'dd/mm/yyyy'): ");
+            data = Console.ReadLine();
+
+            while (!ValidarData(data))
+            {
+                Console.Write("ERROR DE LECTURA: Torna a introduir la teva data de naixament (format: 'dd/mm/yyyy'): ");
+                data = Console.ReadLine();
+            }
+            return data;
+
+        }
+
         // Mètode Validar Data
         static bool ValidarData(string dataString)
         {
             bool valid = false;
             DateTime dataTime;
 
-
-
-
-
-
-            //string dia, mes, any;
-            //int diaNum, mesNum, anyNum;
-            //// dd/mm/yyyy
-            //dia = data.Substring(0, 2);
-            //diaNum = Convert.ToInt32(dia);
-            //mes = data.Substring(3, 2);
-            //mesNum = Convert.ToInt32(mes);
-            //any = data.Substring(6);
-            //anyNum = Convert.ToInt32(any);
-
-
-            //if ((diaNum < 1 || diaNum > 31) && (mesNum < 1 || mesNum > 12))
-            //{
-            //    valid = false;
-            //}
-            //else if ((diaNum < 1 || diaNum > 30) && (mesNum != 4 || mesNum != 6 || mesNum != 4 || mesNum != 9 || mesNum != 11))
-            //{
-            //    valid = false;
-            //}
-            //else if ((diaNum < 1 || diaNum > 29) && mesNum != 2 && (anyNum % 4 == 0))
-            //{
-
-            //}
-            //else if ((diaNum < 1 || diaNum > 28) && mesNum != 2)
-            //{
-            //    valid = false;
-            //}
-
-
-
-
-                return valid;
+            if (DateTime.TryParse(dataString, out dataTime))
+            {
+                valid = true;
+            }
+            return valid;
         }
 
 
