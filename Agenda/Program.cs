@@ -10,7 +10,7 @@ namespace Agenda
             char opcio;
 
             Console.WriteLine(ValidarCorreu("roger.pallkad@gmail.com"));
-            Console.WriteLine(ValidarDni("41678255B"));
+            Console.WriteLine(ValidarDni("41647574W"));
         }
 
         // Mètode Agenda
@@ -67,11 +67,6 @@ namespace Agenda
 
 
 
-
-
-
-
-
             // Escriure les Dades
             dades = nom + ';' + cognom + ';' + dni + ';' + telefon + ';' + dNaixa + ';' + correu;
             sW.WriteLine(dades);
@@ -81,13 +76,30 @@ namespace Agenda
         static bool ValidarDni(string dni)
         {
             bool valid = false;
-            Regex patro = new Regex("^[0-9]{8}[A-Z]$");
-            if (patro.IsMatch(dni)) valid = true;
+            Regex patro = new Regex("^[1-9][0-9]{7}[A-Z]$");
+            //Declaracio variables
+            string dniNumeros = dni.Substring(0, 8);
+            string dniLletra = dni.Substring(8, 1);
+            string dniLletraReal = CalcularDNILletra(Convert.ToInt32(dniNumeros));
+
+            //Comparació de les dos lletres del DNI
+            if (patro.IsMatch(dni) && dniLletraReal == dniLletra)
+            { 
+                valid = true;   
+            }
             return valid;
         }
 
-        // Mètode validar telèfon
-        static bool ValidarTelefon(string telefon)
+               
+        static string CalcularDNILletra(int dniNumeros)
+            {
+                string[] control = { "T", "R", "W", "A", "G", "M", "Y", "F", "P", "D", "X", "B", "N", "J", "Z", "S", "Q", "V", "H", "L", "C", "K", "E" };
+                int residu = dniNumeros % 23;
+                return control[residu];
+            }
+
+            // Mètode validar telèfon
+            static bool ValidarTelefon(string telefon)
         {
             bool valid = true;
             if (!"0123456789".Contains(telefon)) valid = false;
