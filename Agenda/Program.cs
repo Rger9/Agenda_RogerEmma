@@ -9,9 +9,8 @@ namespace Agenda
 
         static void Main(string[] args)
         {
-            Console.WriteLine(Agenda());
-            TornarMenu();
-            DonarAlta();
+            EliminarUsuari();
+
         }
 
         // Mètode Agenda
@@ -34,6 +33,20 @@ namespace Agenda
         {
             bool valid = false;
             if (opcio > '0' && opcio < '7' || opcio == 'q' || opcio == 'Q')
+            {
+                valid = true;
+            }
+            return valid;
+        }
+
+        // Mètode Validar Si o No
+        static bool SiONo(ref char opcio)
+        {
+            bool valid = false;
+            if (opcio == 'S') opcio = 's';
+            if (opcio == 'N') opcio = 'n';
+
+            if (opcio == 's' || opcio == 'n')
             {
                 valid = true;
             }
@@ -251,7 +264,58 @@ namespace Agenda
             return valid;
         }
 
+        // Mètode Eliminar Usuari
+        static void EliminarUsuari()
+        {
+            StreamReader sR;
+            StreamWriter sW;
+            string nomCognom, linia = "", liniaAux ="", nomFitxer = "", cognomFitxer = "", nomCognomFitxer="", agenda = "";
+            char opcio = '0';
+            sR = new StreamReader(@".\agenda.txt");
+            Console.WriteLine("Escriu el nom i cognom de l'usuari que vulguis eliminar:");
+            nomCognom = Console.ReadLine();
 
+            while (!SiONo(ref opcio))
+            {
+                Console.Clear();
+                Console.WriteLine($"Segur que vols eliminar a l'usuari {nomCognom}? ('S' / 'N') ");
+                opcio = Console.ReadKey().KeyChar;
+
+            }
+            Console.Clear();
+
+            switch (opcio)
+            {
+                case 's':
+                    while (!sR.EndOfStream)
+                    {
+                        // linia = Roger;Palmada;41673251B;633556238;17/04/2001;roger.palmada@gmail.com
+                        // liniaAux = Palmada;41673251B;633556238;17/04/2001;roger.palmada@gmail.com
+                        linia = sR.ReadLine();
+                        Console.WriteLine(linia);
+                        nomFitxer = linia.Substring(0, linia.IndexOf(';'));
+                        liniaAux = linia.Substring(linia.IndexOf(';') + 1);
+                        cognomFitxer = liniaAux.Substring(0, liniaAux.IndexOf(';'));
+                        nomCognomFitxer = nomFitxer + ' ' + cognomFitxer;
+
+                        if (nomCognom != nomCognomFitxer)
+                        {
+                            if (agenda == "") agenda += linia;
+                            else agenda += "\n"+linia;
+                        }
+                    }
+                    sR.Close();
+                    sW = new StreamWriter(@".\agenda.txt");
+                    sW.WriteLine(agenda);
+                    sW.Close();
+
+                    break;
+                case 'n':
+                    break;
+            }
+            
+
+        }
 
 
 
