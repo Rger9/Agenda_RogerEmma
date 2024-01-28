@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Net;
 
 namespace Agenda
 {
@@ -9,7 +11,7 @@ namespace Agenda
 
         static void Main(string[] args)
         {
-            EliminarUsuari();
+            MostrarUsuari();
 
         }
 
@@ -292,7 +294,6 @@ namespace Agenda
                         // linia = Roger;Palmada;41673251B;633556238;17/04/2001;roger.palmada@gmail.com
                         // liniaAux = Palmada;41673251B;633556238;17/04/2001;roger.palmada@gmail.com
                         linia = sR.ReadLine();
-                        Console.WriteLine(linia);
                         nomFitxer = linia.Substring(0, linia.IndexOf(';'));
                         liniaAux = linia.Substring(linia.IndexOf(';') + 1);
                         cognomFitxer = liniaAux.Substring(0, liniaAux.IndexOf(';'));
@@ -317,7 +318,65 @@ namespace Agenda
 
         }
 
+        // Mètode Mostrar Usuari
+        static void MostrarUsuari()
+        {
+            StreamReader sR = new StreamReader(@".\agenda.txt");
+            string nomCognomDemanar, nom, cognom, nomCognom, linia, liniaAux, dades = "";
+            bool trobat = false;
 
+            Console.WriteLine("Introdueix el nom i cognom de la persona que vulguis mostrar");
+            nomCognomDemanar = Console.ReadLine();
+
+            while (!sR.EndOfStream && !trobat)
+            {
+                linia = sR.ReadLine();
+                nom = linia.Substring(0, linia.IndexOf(';'));
+                liniaAux = linia.Substring(linia.IndexOf(';') + 1);
+                cognom = liniaAux.Substring(0, liniaAux.IndexOf(';'));
+                nomCognom = nom + ' ' + cognom;
+
+                if (nomCognom == nomCognomDemanar)
+                {
+                    dades = linia;
+                    trobat = true;
+                }
+            }
+            if (!trobat) Console.WriteLine($"L'usuari {nomCognomDemanar} no existeix");
+            else
+            {
+                MostrarDadesUserFriendly(dades);               
+                Thread.Sleep(5000);
+            }
+
+
+        }
+        static void MostrarDadesUserFriendly(string dades)
+        {
+            string nom, cognom, dni, telefon, dataNaix, correu;
+            DateTime data;
+            CultureInfo catala= new CultureInfo("ca-ES");
+            // dades = Roger;Palmada;41673251B;633556238;17/04/2001;roger.palmada@gmail.com
+            nom = dades.Substring(0, dades.IndexOf(';'));
+            dades = dades.Substring(dades.IndexOf(';') + 1);
+            cognom = dades.Substring(0, dades.IndexOf(';'));
+            dades = dades.Substring(dades.IndexOf(';') + 1);
+            dni = dades.Substring(0, dades.IndexOf(';'));
+            dades = dades.Substring(dades.IndexOf(';') + 1);
+            telefon = dades.Substring(0, dades.IndexOf(";"));
+            dades = dades.Substring(dades.IndexOf(';') + 1);
+            dataNaix = dades.Substring(0, dades.IndexOf(';'));
+            correu = dades.Substring(dades.IndexOf(';') + 1);
+
+            data = Convert.ToDateTime(dataNaix);
+
+            Console.WriteLine(
+                $"\tUsuari:   {nom} {cognom}\n" +
+                $"\tDataNaix: {data.ToString("dddd, dd MMMM yyyy", catala)}\n" +
+                $"\tDNI:      {dni}\n" +
+                $"\tTelèfon:  {telefon}\n" +
+                $"\tCorreu:   {correu}\n");
+        }
 
 
     }
