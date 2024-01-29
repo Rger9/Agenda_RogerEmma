@@ -12,6 +12,7 @@ namespace Agenda
         {
             // Console.ForegroundColor = colormenu;
             char opcio = '0';
+            CrearFitxer();
             while (opcio != 'q' && opcio != 'Q')
             {
                 do
@@ -106,6 +107,17 @@ namespace Agenda
                     // Sortir
                 
                     break;
+            }
+        }
+
+        //Metode Crear Fitxer
+        static void CrearFitxer()
+        {
+            StreamWriter sW;
+            if (!File.Exists("agenda.txt"))
+            {
+                sW = new StreamWriter(@".\agenda.txt");
+                sW.Close();
             }
         }
 
