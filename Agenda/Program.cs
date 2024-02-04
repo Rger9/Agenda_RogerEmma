@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System;
 
 namespace Agenda
 {
@@ -18,7 +19,7 @@ namespace Agenda
                 do
                 {
                     Console.Clear();
-                    Console.Write(Agenda());
+                    PintarAgenda(Agenda());
                     opcio = Console.ReadKey().KeyChar;
                 }
                 while (!ValidarOpcio(opcio));
@@ -31,15 +32,17 @@ namespace Agenda
         static string Agenda()
         {
             string agenda =
-                "AGENDA\n" +
-                "1 - Donar d'alta\n" +
-                "2 - Recuperar Usuari\n" +
-                "3 - Modificar Usuari\n" +
-                "4 - Eliminar Usuari\n" +
-                "5 - Mostrar Agenda\n" +
-                "6 - Ordenar Agenda\n" +
-                "q - Sortir\n\n" +
-                "Selecciona una opció... ";
+                $"\n╔════════════════════════════════╗\n" +
+               $"║             AGENDA             ║\n" +
+               $"╠════════════════════════════════╣\n" +
+               $"║  1 - Donar d'alta              ║\n" +
+               $"║  2 - Recuperar Usuari          ║\n" +
+               $"║  3 - Modificar Usuari          ║\n" +
+               $"║  4 - Eliminar Usuari           ║\n" +
+               $"║  5 - Mostrar Agenda            ║\n" +
+               $"║  6 - Ordenar Agenda            ║\n" +
+               $"║  q - Sortir                    ║\n" +
+               $"╚════════════════════════════════╝";
             return agenda;
         }
 
@@ -71,7 +74,7 @@ namespace Agenda
         // Mètode SeleccionarOpcio
         static void SeleccionarOpcio(char opcio)
         {
-            Console.Clear();
+            PintarOpcio(Agenda(), opcio);
             switch (opcio)
             {
                 case '1':
@@ -138,6 +141,7 @@ namespace Agenda
             sW = new StreamWriter(new FileStream(@".\agenda.txt", FileMode.Append));
 
             string nom, cognom, dni, telefon, dNaixa, correu, dades;
+            Titol("DONAR D'ALTA USUARI");
             // Demana nom i cognom
             Console.Write("Introdueix el teu nom: ");
             nom = Console.ReadLine();
@@ -173,7 +177,7 @@ namespace Agenda
             StreamReader sR = new StreamReader(@".\agenda.txt");
             string nomCognomDemanar, nom, cognom, nomCognom, linia, liniaAux, dades = "";
             bool trobat = false;
-
+            Titol("RECUPERAR USUARI");
             Console.WriteLine("Introdueix el nom i cognom de la persona que vulguis mostrar");
             nomCognomDemanar = Console.ReadLine();
 
@@ -219,11 +223,11 @@ namespace Agenda
             data = Convert.ToDateTime(dataNaix);
 
             Console.WriteLine(
-                $"\tUsuari:   {nom} {cognom}\n" +
-                $"\tDataNaix: {data.ToString("dddd, dd MMMM yyyy", catala)}\n" +
-                $"\tDNI:      {dni}\n" +
-                $"\tTelèfon:  {telefon}\n" +
-                $"\tCorreu:   {correu}\n");
+                $"\tUsuari:     {nom} {cognom}\n" +
+                $"\tDataNaix:   {data.ToString("dddd, dd MMMM yyyy", catala)}\n" +
+                $"\tDNI:        {dni}\n" +
+                $"\tTelèfon:    {telefon}\n" +
+                $"\tCorreu:     {correu}\n");
         }
 
         static void MostrarDadesCompacte(string dades)
@@ -236,8 +240,8 @@ namespace Agenda
             dades = dades.Substring(dades.IndexOf(';') + 1);
             dades = dades.Substring(dades.IndexOf(';') + 1);
             telefon = dades.Substring(0, dades.IndexOf(";"));
-
-            Console.WriteLine($"\tUsuari:   {nom} {cognom}\t\t\t Telèfon: {telefon}");
+            Console.Write($"\tUsuari:   {nom} {cognom}".PadRight(40, ' '));
+            Console.WriteLine($"Telèfon: {telefon}");
 
         }
 
@@ -247,10 +251,10 @@ namespace Agenda
         {
             StreamReader sR = new StreamReader(@".\agenda.txt");
             StreamWriter sW;
-            string nomCognomMod, linia, nom, cognom, nomFitxer, cognomFitxer, telefon = "", dni = "", dataNaix = "", correu = "", nomCognom = "1234", agenda = "", dades = "";
+            string nomCognomMod, linia, nom, cognom, telefon = "", dni = "", dataNaix = "", correu = "", nomCognom = "1234", agenda = "", dades = "";
             char opcio = '0', opcio2='0';
             bool trobat = false;
-
+            Titol("MODIFICAR USUARI");
             Console.WriteLine("Introdueix el nom i cognom de l'usuari que vulguis modificar: (ex: 'Roger palmada')");
             nomCognomMod = Console.ReadLine();
             nom = nomCognomMod.Substring(0, nomCognomMod.IndexOf(' '));
@@ -259,6 +263,7 @@ namespace Agenda
             // Busca el nom i cognom al fitxer
             while (!sR.EndOfStream)
             {
+
                 linia = sR.ReadLine();
                 if (linia.Contains(nom) && linia.Contains(cognom))
                 {
@@ -275,12 +280,13 @@ namespace Agenda
                 while (!SiONo(ref opcio))
                 {
                     Console.Clear();
+                    Titol("modificar usuari");
                     Console.WriteLine($"Segur que vols modificar a l'usuari {nomCognom}? ('S' / 'N') ");
                     opcio = Console.ReadKey().KeyChar;
 
                 }
                 Console.Clear();
-
+                Titol("modificar usuari");
                 switch (opcio)
                 {
                     case 's':
@@ -337,19 +343,18 @@ namespace Agenda
                                         break;
                                 }
                                 dades = $"{nom};{cognom};{dni};{telefon};{dataNaix};{correu}";
-                                if (agenda == "") agenda += dades;
-                                else agenda += "\n" + dades;
+                                ReescriureAgenda(ref agenda, dades);
 
                             }
                             else
                             {
-                                if (agenda == "") agenda += linia;
-                                else agenda += "\n" + linia;
+                                ReescriureAgenda(ref agenda, dades);
                             }
 
                         }
                         MostrarDadesUserFriendly(dades);
                         sR.Close();
+                        agenda += "\n";
                         sW = new StreamWriter(@".\agenda.txt");
                         sW.Write(agenda);
                         sW.Close();
@@ -359,9 +364,7 @@ namespace Agenda
                         Console.WriteLine("No es modificarà l'usuari...");
                         break;
                 }
-
             }
-
         }
 
 
@@ -369,10 +372,10 @@ namespace Agenda
         static void EliminarUsuari()
         {
             StreamReader sR;
-            StreamWriter sW;
             string nomCognom, linia = "", liniaAux = "", nomFitxer = "", cognomFitxer = "", nomCognomFitxer = "", agenda = "";
             char opcio = '0';
             sR = new StreamReader(@".\agenda.txt");
+            Titol("ELIMINAR USUARI");
             Console.WriteLine("Escriu el nom i cognom de l'usuari que vulguis eliminar:");
             nomCognom = Console.ReadLine();
 
@@ -383,7 +386,6 @@ namespace Agenda
                 opcio = Console.ReadKey().KeyChar;
 
             }
-            Console.Clear();
 
             switch (opcio)
             {
@@ -400,66 +402,100 @@ namespace Agenda
 
                         if (nomCognom != nomCognomFitxer)
                         {
-                            if (agenda == "") agenda += linia;
-                            else agenda += "\n" + linia;
+                            ReescriureAgenda(ref agenda, linia);
                         }
                     }
                     sR.Close();
-                    sW = new StreamWriter(@".\agenda.txt");
-                    sW.WriteLine(agenda);
-                    sW.Close();
+                    agenda += "\n";
+                    SobreescriureFitxer(agenda);
 
                     break;
                 case 'n':
+                    Console.WriteLine($"No s'eliminarà a {nomCognom}...");
                     break;
             }
 
-        }
-
-
-        //Mètode Mostrar Agenda
-        static void MostrarAgenda()
-        {
-            string dades = "";
-            StreamReader sR = new StreamReader(@".\agenda.txt");
-            Console.WriteLine("TOTS ELS USUARIS DE L'AGENDA:");
-            while (!sR.EndOfStream)
-            {
-                dades = sR.ReadLine();
-                MostrarDadesCompacte(dades);
-            }
-            sR.Close();
         }
 
         //Mètode Ordenar Agenda
         static void OrdenarAgenda()
         {
-            string rutaFitxer = "agenda.txt";
-            FileInfo fitxer = new FileInfo(rutaFitxer);
-
-            if (fitxer.Exists)
+            StreamReader sR;
+            int i = 0;
+            string dades, dadesPetit = "ZZ", dadesAnt = "AA", agenda = "";
+            sR = new StreamReader(@".\agenda.txt");
+            Titol("ORDENAR AGENDAD");
+            while (i < RangAgenda(sR))
             {
-                List<string> linies = new List<string>();
-                using (StreamReader reader = new StreamReader(rutaFitxer))
+                sR = new StreamReader(@".\agenda.txt");
+                while (!sR.EndOfStream)
                 {
-                    string linia;
-                    while ((linia = reader.ReadLine()) != null)
+                    dades = sR.ReadLine();
+                    if (dades.CompareTo(dadesPetit) < 0 && dades.CompareTo(dadesAnt) > 0)
                     {
-                        linies.Add(linia);
+                        dadesPetit = dades;
                     }
                 }
-                {
-                    using (StreamWriter writer = new StreamWriter(rutaFitxer))
-                    {
-                        for (int i = 0; i < linies.Count; i++)
-                        {
-                            writer.WriteLine(linies[i]);
-                        }
-                    }
-
-                    Console.WriteLine("Fitxer d'agenda ordenat alfabèticament.");
-                }
+                ReescriureAgenda(ref agenda, dadesPetit);
+                dadesAnt = dadesPetit;
+                dadesPetit = "ZZ";
+                i++;
+                sR.Close();
             }
+            sR.Close();
+            agenda += "\n";
+            Console.WriteLine(agenda);
+            Console.WriteLine("El fitxer 'agenda.txt' ha estat ordenat afabèticament.");
+            SobreescriureFitxer(agenda);
+        }
+
+        //Mètode Mostrar Agenda
+        static void MostrarAgenda()
+        {
+            StreamReader sR = new StreamReader(@".\agenda.txt");
+            int i = 0, rang = 0;
+            string dades = "", dadesPetit = "ZZ", dadesAnt = "AA";
+            Titol("MOSTRAR AGENDA");
+
+            // Llegeix el fitxer tants cops com rang hi hagi, cada cop escollint el nombre més petit (no més petit que l'anterior) i escribint-lo
+            while (i < RangAgenda(sR))
+            {
+                sR = new StreamReader(@".\agenda.txt");
+                while (!sR.EndOfStream)
+                {
+                    dades = sR.ReadLine();
+                    if (dades.CompareTo(dadesPetit) < 0 && dades.CompareTo(dadesAnt) > 0)
+                    {
+                        dadesPetit = dades;
+                    }
+                }
+                MostrarDadesCompacte(dadesPetit);
+                dadesAnt = dadesPetit;
+                dadesPetit = "ZZ";
+                i++;
+                sR.Close();
+            }
+        }
+
+        // Mètode Reescriure a l'agenda buida
+        static void ReescriureAgenda(ref string agenda, string linia)
+        {
+            if (agenda == "") agenda += linia;
+            else agenda += "\n" + linia;
+        }
+
+        // Mètode Rang Agenda
+        static int RangAgenda(StreamReader sR)
+        {
+            int rang = 0;
+            sR = new StreamReader(@".\agenda.txt");
+            while (!sR.EndOfStream)
+            {
+                sR.ReadLine();
+                rang++;
+            }
+            sR.Close();
+            return rang;
         }
 
         // Mètode Demanar DNI
@@ -557,7 +593,7 @@ namespace Agenda
         static bool ValidarCorreu(string correu)
         {
             bool valid = false;
-            Regex patro = new Regex(@"^[a-z0-9.]{3,}[@][a-z.]{3,}[/.](com||es)$");
+            Regex patro = new Regex(@"^[a-z0-9.\-_]{3,}[@][a-z.]{3,}[/.](com||es)$");
             if (patro.IsMatch(correu)) valid = true;
             return valid;
         }
@@ -592,5 +628,102 @@ namespace Agenda
             return valid;
         }
 
+        // Mètode SobreescriureFitxer
+        static void SobreescriureFitxer(string text)
+        {
+            System.IO.FileInfo info = new System.IO.FileInfo(@".\agenda.txt");
+            info.Attributes = System.IO.FileAttributes.Normal;
+            System.IO.File.Delete(@"agenda.txt");
+            StreamWriter sW;
+            sW = new StreamWriter(@".\agenda.txt");
+            sW.WriteLine(text);
+            sW.Close();
+        }
+
+        // DECORACIÓ
+        // Mètode Pintar Agenda
+        static void PintarAgenda(string agenda)
+        {
+            string linea = "", text = agenda;
+            while (text.Contains("\n"))
+            {
+                linea = text.Substring(0, text.IndexOf("\n"));
+                Centrar(linea);
+                text = text.Substring(text.IndexOf("\n") + 1);
+            }
+            Centrar(text);
+        }
+        static void PintarAgenda(string agenda, char i)
+        {
+            string linea = "", text = agenda;
+            while (text.Contains("\n"))
+            {
+                linea = text.Substring(0, text.IndexOf("\n"));
+                Centrar(linea, i);
+                text = text.Substring(text.IndexOf("\n") + 1);
+            }
+            Centrar(text);
+        }
+
+        // Mètode Centrar
+        static void Centrar(string text)
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Write(String.Format("{0," + ((Console.WindowWidth / 2) - (text.Length / 2) - 1) + "}", ""));
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.Write(String.Format($"{text}"));
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.WriteLine();
+        }
+
+        static void Centrar(string text, char i)
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Write(String.Format("{0," + ((Console.WindowWidth / 2) - (text.Length / 2) - 1) + "}", ""));
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            if (text.Contains((i)))
+            {
+                Console.Write(text.Substring(0, text.IndexOf(i)));
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(String.Format($"{text.Substring(3, text.Length - 4)}"));
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write('║');
+            }
+            else
+            {
+                Console.BackgroundColor = ConsoleColor.DarkRed;
+                Console.Write(String.Format($"{text}"));
+            }
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.WriteLine();
+        }
+
+
+        // Mètode Pintar
+        static void Pintar(string text)
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Write(String.Format("{0," + (text.Length - 1) + "}", ""));
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.Write(String.Format($"{text}"));
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.WriteLine();
+        }
+
+        // Mètode PintarOpcio
+        static void PintarOpcio(string agenda, char i)
+        {
+            PintarAgenda(Agenda(), i);
+            Thread.Sleep(1000);
+            Console.Clear();
+        }
+
+        // Mètode Títol
+        static void Titol(string text)
+        {
+            text = text.ToUpper();
+            Console.WriteLine();
+            PintarAgenda($"~~~~~~~~~~~~~~~~~~{text}~~~~~~~~~~~~~~~~~~");
+        }
     }
 }
